@@ -577,16 +577,24 @@
   </style>
 </head>
 <body>
-  <audio id="bg-music" loop>
-    <source src="https://raw.githubusercontent.com/Rikipratama/undangan-aqiqah/main/Maher%20Zain%20-%20Thank%20You%20Allah%20Official%20Lyric%20Video%20%2864%20KBps%29%20%28mp3cut.net%29.mp3" type="audio/mpeg">
-  </audio>
+    <audio id="bg-music" loop>
+      <source src="https://raw.githubusercontent.com/Rikipratama/undangan-aqiqah/main/Maher%20Zain%20-%20Thank%20You%20Allah%20Official%20Lyric%20Video%20%2864%20KBps%29%20%28mp3cut.net%29.mp3" type="audio/mpeg">
+      Browser Anda tidak mendukung audio.
+    </audio>
   
-  <script>
-    document.addEventListener('click', () => {
-      const music = document.getElementById('bg-music');
-      music.play();
-    }, { once: true });
-  </script>
+    <script>
+      document.addEventListener('DOMContentLoaded', () => {
+        const music = document.getElementById('bg-music');
+  
+        document.addEventListener('click', () => {
+          music.volume = 1;
+          music.muted = false;
+          music.play().catch((e) => {
+            console.error('Gagal memutar musik:', e);
+          });
+        }, { once: true });
+      });
+    </script>
 
   <div class="container">
     <div class="islamic-pattern"></div>
