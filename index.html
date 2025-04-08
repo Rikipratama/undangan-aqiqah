@@ -577,10 +577,17 @@
   </style>
 </head>
 <body>
-  <audio autoplay loop>
+  <audio id="bg-music" loop>
     <source src="https://raw.githubusercontent.com/Rikipratama/undangan-aqiqah/main/Maher%20Zain%20-%20Thank%20You%20Allah%20Official%20Lyric%20Video%20%2864%20KBps%29%20%28mp3cut.net%29.mp3" type="audio/mpeg">
-    Browser Anda tidak mendukung elemen audio.
   </audio>
+  
+  <script>
+    document.addEventListener('click', () => {
+      const music = document.getElementById('bg-music');
+      music.play();
+    }, { once: true });
+  </script>
+
   <div class="container">
     <div class="islamic-pattern"></div>
     <div class="border-frame"></div>
