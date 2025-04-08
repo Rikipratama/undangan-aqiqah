@@ -720,11 +720,16 @@
   const nameInput = document.getElementById('name');
   const commentInput = document.getElementById('comment');
   const commentList = document.getElementById('comment-list');
+  const scriptURL = 'https://script.google.com/macros/s/AKfycbxVIDUE6i7YOmUCLj6rZgZBasolcN3oaIIUi_IKo0S0DooEx5NKOxXQj_5YRe_s5NfCVA/exec';
 
-  // Tampilkan komentar dari localStorage saat halaman dibuka
+  // Tampilkan komentar dari Google Sheets saat halaman dibuka
   document.addEventListener('DOMContentLoaded', () => {
-    const comments = JSON.parse(localStorage.getItem('comments')) || [];
-    comments.forEach(addCommentToPage);
+    fetch(scriptURL)
+      .then(res => res.json())
+      .then(data => {
+        data.reverse().forEach(addCommentToPage);
+      })
+      .catch(err => console.error('Gagal ambil komentar:', err));
   });
 
   // Submit form
@@ -732,16 +737,24 @@
     e.preventDefault();
     const name = nameInput.value.trim();
     const comment = commentInput.value.trim();
+
     if (name && comment) {
-      const newComment = { name, comment, time: new Date().toLocaleString() };
-      addCommentToPage(newComment);
+      const data = { name, comment };
 
-      // Simpan ke localStorage
-      const comments = JSON.parse(localStorage.getItem('comments')) || [];
-      comments.push(newComment);
-      localStorage.setItem('comments', JSON.stringify(comments));
-
-      form.reset();
+      fetch(scriptURL, {
+        method: 'POST',
+        body: JSON.stringify(data),
+        headers: {
+          'Content-Type': 'application/json',
+        },
+      })
+      .then(res => res.text())
+      .then(() => {
+        // Tampilkan komentar langsung setelah kirim
+        addCommentToPage({ name, comment, time: new Date().toLocaleString() });
+        form.reset();
+      })
+      .catch(err => console.error('Gagal kirim komentar:', err));
     }
   });
 
@@ -752,10 +765,11 @@
     div.style.borderRadius = '0.5rem';
     div.style.backgroundColor = '#fff';
     div.style.boxShadow = '0 2px 8px rgba(0,0,0,0.05)';
-    div.innerHTML = `<strong>${name}</strong> <em style="font-size:12px; color:gray;">(${time})</em><br><p style="margin-top:0.5rem;">${comment}</p>`;
+    div.innerHTML = `<strong>${name}</strong> <em style="font-size:12px; color:gray;">(${time || 'Baru saja'})</em><br><p style="margin-top:0.5rem;">${comment}</p>`;
     commentList.prepend(div);
   }
 </script>
+
 
 </body>
 </html>
