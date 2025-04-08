@@ -720,52 +720,54 @@
   const nameInput = document.getElementById('name');
   const commentInput = document.getElementById('comment');
   const commentList = document.getElementById('comment-list');
+
   const scriptURL = 'https://script.google.com/macros/s/AKfycbxVIDUE6i7YOmUCLj6rZgZBasolcN3oaIIUi_IKo0S0DooEx5NKOxXQj_5YRe_s5NfCVA/exec';
 
-  // Tampilkan komentar dari Google Sheets saat halaman dibuka
-  document.addEventListener('DOMContentLoaded', () => {
-    fetch(scriptURL)
-      .then(res => res.json())
-      .then(data => {
-        data.reverse().forEach(addCommentToPage);
-      })
-      .catch(err => console.error('Gagal ambil komentar:', err));
-  });
-
-  // Submit form
-  form.addEventListener('submit', (e) => {
-    e.preventDefault();
-    const name = nameInput.value.trim();
-    const comment = commentInput.value.trim();
-
-    if (name && comment) {
-      const data = { name, comment };
-
-      fetch(scriptURL, {
-        method: 'POST',
-        body: JSON.stringify(data),
-        headers: {
-          'Content-Type': 'application/json',
-        },
-      })
-      .then(res => res.text())
-      .then(() => {
-        // Tampilkan komentar langsung setelah kirim
-        addCommentToPage({ name, comment, time: new Date().toLocaleString() });
-        form.reset();
-      })
-      .catch(err => console.error('Gagal kirim komentar:', err));
+  // Ambil komentar dari Google Sheets saat halaman dibuka
+  document.addEventListener('DOMContentLoaded', async () => {
+    try {
+      const res = await fetch(scriptURL);
+      const data = await res.json();
+      data.reverse().forEach(addCommentToPage); // tampilkan terbaru di atas
+    } catch (error) {
+      console.error('Gagal memuat komentar:', error);
     }
   });
 
-  function addCommentToPage({ name, comment, time }) {
+  // Submit form
+  form.addEventListener('submit', async (e) => {
+    e.preventDefault();
+    const name = nameInput.value.trim();
+    const comment = commentInput.value.trim();
+    if (!name || !comment) return;
+
+    const newComment = { nama: name, pesan: comment };
+    try {
+      await fetch(scriptURL, {
+        method: 'POST',
+        body: JSON.stringify(newComment),
+        headers: { 'Content-Type': 'application/json' }
+      });
+      addCommentToPage({ name, comment, time: new Date().toLocaleString() });
+      form.reset();
+    } catch (error) {
+      console.error('Gagal mengirim komentar:', error);
+    }
+  });
+
+  function addCommentToPage({ name, comment, pesan, waktu, time }) {
     const div = document.createElement('div');
     div.style.marginBottom = '1rem';
     div.style.padding = '1rem';
     div.style.borderRadius = '0.5rem';
     div.style.backgroundColor = '#fff';
     div.style.boxShadow = '0 2px 8px rgba(0,0,0,0.05)';
-    div.innerHTML = `<strong>${name}</strong> <em style="font-size:12px; color:gray;">(${time || 'Baru saja'})</em><br><p style="margin-top:0.5rem;">${comment}</p>`;
+
+    const displayName = name || nama;
+    const displayComment = comment || pesan;
+    const displayTime = time || waktu || new Date().toLocaleString();
+
+    div.innerHTML = `<strong>${displayName}</strong> <em style="font-size:12px; color:gray;">(${displayTime})</em><br><p style="margin-top:0.5rem;">${displayComment}</p>`;
     commentList.prepend(div);
   }
 </script>
