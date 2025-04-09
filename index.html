@@ -762,7 +762,7 @@
       await fetch(scriptURL, {
         method: 'POST',
         body: JSON.stringify(newComment),
-        headers: { 'Content-Type': 'application/json' }
+        headers: { 'Content-Type': 'text/plain' }
       });
 
       addCommentToPage({ nama, pesan, waktu: new Date().toLocaleString() });
