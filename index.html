@@ -765,7 +765,17 @@
         headers: { 'Content-Type': 'text/plain' }
       });
 
-      addCommentToPage({ nama, pesan, waktu: new Date().toLocaleString() });
+      const now = new Date();
+        const waktuFormatted = now.toLocaleString('id-ID', {
+          weekday: 'long',
+          day: 'numeric',
+          month: 'long',
+          year: 'numeric',
+          hour: '2-digit',
+          minute: '2-digit'
+        });
+      
+      addCommentToPage({ nama, pesan, waktu: waktuFormatted });
       form.reset();
 
       // Tampilkan notifikasi sukses
